@@ -157,7 +157,7 @@ public:
               c=freedCol;
               bookings[bookingCount]=Booking(nextId++, nextPassenger,r,c,2500);
               recentBookings.push(bookingCount);
-              cout<< "Seat autmtically assigned to waiting list passenger: "<<bookings[bookingcount] << "\n";
+              cout<< "Seat autmtically assigned to waiting list passenger: "<<bookings[bookingCount] << "\n";
               bookingCount++;
           }            
     }
