@@ -13,8 +13,7 @@ public:
     int row, col;
     double fare;
 
-    Booking(int i = 0, string n = "", int r = 0,
-            int c = 0, double f = 2500) {
+    Booking(int i = 0, string n = "", int r = 0, int c = 0, double f = 2500) {
         id = i;
         passengerName = n;
         row = r;
@@ -80,7 +79,7 @@ class AirlineSystem {
     priority_queue<pair<int, string>> boarding;
 
 public:
-    void viewSeats() cons {
+    void viewSeats() const {
         flight.showSeats();
     }
     void reserve(){
@@ -150,18 +149,18 @@ public:
             recentBookings.push(updated.top());
             updated.pop();
         }
-          if(!=waitingList.empty()){
+          if(!waitingList.empty()){
               string nextPassenger=waitingList.front();
               waitingList.pop();
               int r,c;
               if(flight.bookSeat(r,c)){
-              bookings[bookingCount]=Booking(nextId++, naxtPssenger, r,c, 2500);
-              recentBookings.push(bookingcount);
+              bookings[bookingCount]=Booking(nextId++, naxtPassenger,r,c,2500);
+              recentBookings.push(bookingCount);
               cout<< "Seat autmtically assigned to waiting list passenger: "<<bookings[bookingcount] << "\n";
               bookingCount++;
     }
           }            
-        
+    }
     void addBoardingPriority() {
         string name;
         int priority;
@@ -169,8 +168,8 @@ public:
         getline(cin >> ws, name);
         cout << "Enter priority (higher number = higher priority): ";
         while (!(cin >> priority)){
-            cin.clear;
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(),'\n');
             cout << "invalid input . please enter a numeric priority: ";
         }
         boarding.push({priority, name});
