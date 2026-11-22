@@ -153,12 +153,12 @@ public:
               string nextPassenger=waitingList.front();
               waitingList.pop();
               int r,c;
-              if(flight.bookSeat(r,c)){
-              bookings[bookingCount]=Booking(nextId++, naxtPassenger,r,c,2500);
+              r=freedRow;
+              c=freedCol;
+              bookings[bookingCount]=Booking(nextId++, nextPassenger,r,c,2500);
               recentBookings.push(bookingCount);
               cout<< "Seat autmtically assigned to waiting list passenger: "<<bookings[bookingcount] << "\n";
               bookingCount++;
-    }
           }            
     }
     void addBoardingPriority() {
