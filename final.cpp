@@ -3,6 +3,7 @@
 #include <queue>
 #include <stack>
 #include <fstream>
+#include <limits>
 using namespace std;
 
 class Booking {
@@ -60,10 +61,10 @@ public:
 
     void showSeats() const {
         cout << "\nFlight: " << flightName << "\n";
-
         for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 3; j++)
+            for (int j = 0; j < 3; j++){
                 cout << (seat[i][j] ? "[X] " : "[ ] ");
+            }
             cout << "\n";
         }
     }
@@ -74,14 +75,15 @@ class AirlineSystem {
     Booking bookings[12];
     int bookingCount = 0;
     int nextId = 1001;
-
     queue<string> waitingList;
     stack<int> recentBookings;
-
     priority_queue<pair<int, string>> boarding;
 
 public:
-    void reserve() {
+    void viewSeats() cons {
+        flight.showSeats();
+    }
+    void reserve(){
         if (bookingCount == 12) {
             string name;
             cout << "Flight is full. Enter name for waiting list: ";
@@ -90,25 +92,20 @@ public:
             cout << "Added to waiting list.\n";
             return;
         }
-
         string name;
         cout << "Passenger name: ";
         getline(cin >> ws, name);
 
         int r, c;
-
         if (!flight.bookSeat(r, c)) {
             cout << "No seats available.\n";
             return;
         }
 
-        bookings[bookingCount] =
-            Booking(nextId++, name, r, c, 2500);
-
+        bookings[bookingCount] = Booking(nextId++, name, r, c, 2500);
         recentBookings.push(bookingCount);
         cout << "Booking confirmed!\n";
         cout << bookings[bookingCount] << "\n";
-
         bookingCount++;
     }
 
@@ -117,11 +114,10 @@ public:
             cout << "No bookings found.\n";
             return;
         }
-
-        for (int i = 0; i < bookingCount; i++)
+        for (int i = 0; i < bookingCount; i++){
             cout << bookings[i] << "\n";
     }
-
+    }
     void cancelRecent() {
         if (recentBookings.empty()) {
             cout << "No booking available to cancel.\n";
@@ -130,17 +126,15 @@ public:
 
         int index = recentBookings.top();
         recentBookings.pop();
-
-        flight.releaseSeat(bookings[index].row,
-                           bookings[index].col);
-
-        cout << "Cancelled booking for "
-             << bookings[index].passengerName << ".\n";
+        int freedRow = bookings[index].row;
+        int freedCol = bookings[index].col;
+        flight.releaseSeat(freedRow,freedCol);
+        cout << "Cancelled booking for " << bookings[index].passengerName << ".\n";
 
         // Remove the booking from the active list.
-        for (int i = index; i < bookingCount - 1; i++)
+        for (int i = index; i < bookingCount - 1; i++){
             bookings[i] = bookings[i + 1];
-
+        }
         bookingCount--;
 
         // Rebuild history indices after shifting the array.
@@ -148,29 +142,37 @@ public:
         while (!recentBookings.empty()) {
             int oldIndex = recentBookings.top();
             recentBookings.pop();
-
             if (oldIndex > index)
                 oldIndex--;
-
             updated.push(oldIndex);
         }
-
         while (!updated.empty()) {
             recentBookings.push(updated.top());
             updated.pop();
         }
+          if(!=waitingList.empty()){
+              string nextPassenger=waitingList.front();
+              waitingList.pop();
+              int r,c;
+              if(flight.bookSeat(r,c)){
+              bookings[bookingCount]=Booking(nextId++, naxtPssenger, r,c, 2500);
+              recentBookings.push(bookingcount);
+              cout<< "Seat autmtically assigned to waiting list passenger: "<<bookings[bookingcount] << "\n";
+              bookingCount++;
     }
-
+          }            
+        
     void addBoardingPriority() {
         string name;
         int priority;
-
         cout << "Passenger name: ";
         getline(cin >> ws, name);
-
         cout << "Enter priority (higher number = higher priority): ";
-        cin >> priority;
-
+        while (!(cin >> priority)){
+            cin.clear;
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "invalid input . please enter a numeric priority: ";
+        }
         boarding.push({priority, name});
         cout << "Passenger added to boarding queue.\n";
     }
@@ -180,8 +182,7 @@ public:
             cout << "No passengers in boarding queue.\n";
             return;
         }
-
-        cout << "Next passenger: " << boarding.top().second << "\n";
+        cout << "Next passenger: " << boarding.top().second << "(priority: "<< boarding.top().first << ") \n";
         boarding.pop();
     }
 
@@ -192,22 +193,19 @@ public:
         }
 
         queue<string> temp = waitingList;
-
         cout << "\nWaiting passengers:\n";
         while (!temp.empty()) {
-            cout << temp.front() << "\n";
+            cout <<"-" << temp.front() << "\n";
             temp.pop();
         }
     }
 
     void saveBookings() {
         ofstream file("aerosync.txt");
-
         if (!file) {
             cout << "Could not open file.\n";
             return;
         }
-
         for (int i = 0; i < bookingCount; i++)
             file << bookings[i].id << ","
                  << bookings[i].passengerName << ","
@@ -223,7 +221,6 @@ public:
 int main() {
     AirlineSystem system;
     int choice;
-
     do {
         cout << "\n===== AEROSYNC =====\n";
         cout << "1. View seat map\n";
@@ -245,7 +242,7 @@ int main() {
         }
 
         switch (choice) {
-            case 1: system.showBookings(); break; // See note below
+            case 1: system.viewSeats(); break; // See note below
             case 2: system.reserve(); break;
             case 3: system.showBookings(); break;
             case 4: system.cancelRecent(); break;
